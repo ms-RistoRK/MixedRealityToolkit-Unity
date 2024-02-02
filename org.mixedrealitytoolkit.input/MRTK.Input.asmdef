@@ -30,14 +30,9 @@
             "define": "MROPENXR_ANIM_PRESENT"
         },
         {
-            "name": "com.atteneder.gltfast",
+            "name": "com.unity.cloud.gltfast",
             "expression": "",
             "define": "GLTFAST_PRESENT"
-        },
-        {
-            "name": "com.atteneder.ktx",
-            "expression": "",
-            "define": "KTX_PRESENT"
         },
         {
             "name": "com.unity.xr.management",
