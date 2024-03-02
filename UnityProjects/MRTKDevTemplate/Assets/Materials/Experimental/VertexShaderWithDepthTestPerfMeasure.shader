@@ -130,35 +130,35 @@ Shader "Unlit/VertexShaderWithDepthTestPerfMeasure"
                 fixed4 col = fixed4(0.1f, 0.1f, 0.1f, 1.0f);
                 float4 someResult = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-                //if (i.testData > 0.0f)
+                if (i.testData > 0.0f)
                 {
-                    someResult = someExpensiveComputation1(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
+                    //someResult = someExpensiveComputation1(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
                     //someResult = someExpensiveComputation2(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
-                    //someResult = someExpensiveComputation3(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
+                    someResult = someExpensiveComputation3(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
                     someResult.x += 1;
                     float cycleDuration = 4.0f;
                     float timeStep = _Time.y % cycleDuration;
                     col = fixed4(timeStep / (cycleDuration - 1.0f), 0.0f, 0.0f, 0.5f);
                     //Call subshader for backplate here
                 }
-                // else if (i.testData < 0.0f)
-                // {
-                //     someResult = someExpensiveComputation1(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
-                //     //someResult = someExpensiveComputation2(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
-                //     //someResult = someExpensiveComputation3(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
-                //     someResult.x += 1;
-                //     col = fixed4(0.0f, 0.5f, 0.0f, 0.5f);
-                //     //Call subshader for backglow here
-                // }
-                // else
-                // {
-                //     someResult = someExpensiveComputation1(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
-                //     //someResult = someExpensiveComputation2(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
-                //     //someResult = someExpensiveComputation3(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
-                //     someResult.x += 1;
-                //     col = fixed4(0.0f, 0.0f, 0.5f, 0.5f);
-                //     //Call subshader for frontplate here
-                // }
+                else if (i.testData < 0.0f)
+                {
+                    //someResult = someExpensiveComputation1(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
+                    //someResult = someExpensiveComputation2(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
+                    someResult = someExpensiveComputation3(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
+                    someResult.x += 1;
+                    col = fixed4(0.0f, 0.5f, 0.0f, 0.5f);
+                    //Call subshader for backglow here
+                }
+                else
+                {
+                    //someResult = someExpensiveComputation1(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
+                    //someResult = someExpensiveComputation2(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
+                    someResult = someExpensiveComputation3(float4(1.0f, 1.0f, 1.0f, 1.0f), repeat, i.uv);
+                    someResult.x += 1;
+                    col = fixed4(0.0f, 0.0f, 0.5f, 0.5f);
+                    //Call subshader for frontplate here
+                }
 
                 return col;
             }
