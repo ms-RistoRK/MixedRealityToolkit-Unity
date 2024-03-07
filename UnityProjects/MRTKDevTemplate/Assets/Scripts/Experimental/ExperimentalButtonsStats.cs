@@ -39,20 +39,55 @@ class ExperimentalButtonsStats
                                       "Last 60 frames average",
                                       ProfilerMarkerDataUnit.TimeNanoseconds);
 
+    public static readonly ProfilerCounter<float> RenderThreadTimeAverageSinceStart =
+           new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
+                                      "Render Thread time average since start",
+                                      ProfilerMarkerDataUnit.TimeNanoseconds);
+
     public static readonly ProfilerCounter<float> TestMetric =
            new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
                                       "Test metric",
                                       ProfilerMarkerDataUnit.Undefined);
 
-    //public static ProfilerCounterValue<float> SecondMeasure =
+    //public static ProfilerCounterValue<float> Last1FrameGPUFrameTimeAverage =
     //        new ProfilerCounterValue<float>(ExperimentalButtonsStatsCategory,
-    //                                        "Tempo",
-    //                                        ProfilerMarkerDataUnit.Undefined,
-    //                                        ProfilerCounterOptions.FlushOnEndOfFrame);
+    //                                        "Last 1 frame GPU frame time average",
+    //                                        ProfilerMarkerDataUnit.TimeNanoseconds);
+
+    public static readonly ProfilerCounter<float> Last1FrameGPUFrameTimeAverage =
+           new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
+                                      "1 GPUFrameTime average",
+                                      ProfilerMarkerDataUnit.TimeNanoseconds);
+
+    public static readonly ProfilerCounter<float> Last5FrameGPUFrameTimeAverage =
+           new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
+                                      "5 GPUFrameTime average",
+                                      ProfilerMarkerDataUnit.TimeNanoseconds);
+
+    public static readonly ProfilerCounter<float> Last10FrameGPUFrameTimeAverage =
+           new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
+                                      "10 GPUFrameTime average",
+                                      ProfilerMarkerDataUnit.TimeNanoseconds);
+
+    public static readonly ProfilerCounter<float> Last30FrameGPUFrameTimeAverage =
+           new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
+                                      "30 GPUFrameTime average",
+                                      ProfilerMarkerDataUnit.TimeNanoseconds);
+
+    public static readonly ProfilerCounter<float> Last60FrameGPUFrameTimeAverage =
+           new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
+                                      "60 GPUFrameTime average",
+                                      ProfilerMarkerDataUnit.TimeNanoseconds);
+
+    public static readonly ProfilerCounter<float> GPUFrameTimeAverageSinceStart =
+           new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
+                                      "GPUFrameTime average since start",
+                                      ProfilerMarkerDataUnit.TimeNanoseconds);
 
     public static ProfilerCounterValue<float> TimeSinceStart =
             new ProfilerCounterValue<float>(ExperimentalButtonsStatsCategory,
                                             "Time since start",
                                             ProfilerMarkerDataUnit.TimeNanoseconds,
                                             ProfilerCounterOptions.FlushOnEndOfFrame);
+
 }
