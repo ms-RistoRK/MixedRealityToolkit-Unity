@@ -17,9 +17,9 @@ public class TMProTools
     private const string GLYPHTABLE_HEADER = "m_GlyphTable:";
     private const string SHADER_HEADER = "m_Shader:";
 
-    private static HashSet<FileInfo> prefabsWithTMProComponent = new();
-    private static HashSet<FileInfo> assetsWithMaterialTexture2DAndGlyphs = new();
-    private static HashSet<FileInfo> shadersUsedByMaterials = new();
+    private static HashSet<string> prefabsWithTMProComponentPaths = new();
+    private static HashSet<string> assetsWithMaterialTexture2DAndGlyphsPaths = new();
+    private static HashSet<string> shadersUsedByMaterialsPaths = new();
     private static HashSet<string> errosFoundDuringProcessing = new();
 
     [MenuItem("MRTK3TMProTools/Analyze local repo")]
@@ -41,46 +41,29 @@ public class TMProTools
 
     private static void GenerateAnalysisReport()
     {
-        HashSet<string> prefabPaths = new();
-        HashSet<string> assetPaths = new();
-        HashSet<string> shaderPaths = new();
-
-        foreach (FileInfo prefab in prefabsWithTMProComponent)
-        {
-            prefabPaths.Add(prefab.FullName);
-        }
-        foreach (FileInfo asset in assetsWithMaterialTexture2DAndGlyphs)
-        {
-            assetPaths.Add(asset.FullName);
-        }
-        foreach (FileInfo shader in shadersUsedByMaterials)
-        {
-            shaderPaths.Add(shader.FullName);
-        }
-
         //Summary header
-        string report = $"Prefabs with TextMeshPro component: {prefabPaths.Count}\n" +
-                        $"Assets with Material, Texture2D, and GlyphTable: {assetPaths.Count}\n" +
-                        $"Shaders used by materials: {shaderPaths.Count}\n" +
+        string report = $"Prefabs with TextMeshPro component: {prefabsWithTMProComponentPaths.Count}\n" +
+                        $"Assets with Material, Texture2D, and GlyphTable: {assetsWithMaterialTexture2DAndGlyphsPaths.Count}\n" +
+                        $"Shaders used by materials: {shadersUsedByMaterialsPaths.Count}\n" +
                         $"Errors found during processing: {errosFoundDuringProcessing.Count}\n\n";
 
         //Details
-        report += $"* Prefabs ({prefabPaths.Count}) with TextMeshPro component:\n";
-        foreach (string prefabPath in prefabPaths)
+        report += $"* Prefabs ({prefabsWithTMProComponentPaths.Count}) with TextMeshPro component:\n";
+        foreach (string prefabPath in prefabsWithTMProComponentPaths)
         {
             report += "\t" + prefabPath + "\n";
         }
         report += "\n";
 
-        report += $"* Assets ({assetPaths.Count}) with Material, Texture2D, and GlyphTable:\n";
-        foreach (string assetPath in assetPaths)
+        report += $"* Assets ({assetsWithMaterialTexture2DAndGlyphsPaths.Count}) with Material, Texture2D, and GlyphTable:\n";
+        foreach (string assetPath in assetsWithMaterialTexture2DAndGlyphsPaths)
         {
             report += "\t" + assetPath + "\n";
         }
         report += "\n";
 
-        report += $"* Shaders ({shaderPaths.Count}) used by materials:\n";
-        foreach (string shaderPath in shaderPaths)
+        report += $"* Shaders ({shadersUsedByMaterialsPaths.Count}) used by materials:\n";
+        foreach (string shaderPath in shadersUsedByMaterialsPaths)
         {
             report += "\t" + shaderPath + "\n";
         }
@@ -89,7 +72,7 @@ public class TMProTools
         report += $"* Errors ({errosFoundDuringProcessing.Count}) encountered during analysis:\n";
         foreach (string error in errosFoundDuringProcessing)
         {
-            report += error + "\n";
+            report += "\t" + error + "\n";
         }
 
         Debug.Log(report);
@@ -99,9 +82,9 @@ public class TMProTools
     {
         HashSet<FileInfo> result = new();
 
-        foreach (FileInfo assetFile in assetsWithMaterialTexture2DAndGlyphs)
+        foreach (string assetFile in assetsWithMaterialTexture2DAndGlyphsPaths)
         {
-            File.ReadLines(assetFile.FullName)
+            File.ReadLines(assetFile)
                 .Where(line => line.Contains(SHADER_HEADER))
                 .ToList()
                 .ForEach(line => {
@@ -112,7 +95,7 @@ public class TMProTools
                     }
                     else
                     {
-                        errosFoundDuringProcessing.Add($"Shader file for GUID referenced in '{line}' of material {assetFile.FullName} not found");
+                        errosFoundDuringProcessing.Add($"Shader file for GUID referenced in '{line}' of material {assetFile} not found");
                     }
                 });
         }
@@ -140,7 +123,7 @@ public class TMProTools
         foreach (FileInfo shaderFile in processableShaders)
         {
             Debug.Log($"Shader {shaderFile.Name} is used by materials.");
-            shadersUsedByMaterials.Add(shaderFile);
+            shadersUsedByMaterialsPaths.Add(shaderFile.FullName);
         }
     }
 
@@ -174,7 +157,7 @@ public class TMProTools
             if (hasMaterial && hasTexture2D && hasGlyphTable)
             {
                 Debug.Log($"Asset {assetFile.Name} contains Material, Texture2D, and GlyphTable.");
-                assetsWithMaterialTexture2DAndGlyphs.Add(assetFile);
+                assetsWithMaterialTexture2DAndGlyphsPaths.Add(assetFile.FullName);
             }
         }
     }
@@ -189,7 +172,7 @@ public class TMProTools
                 .ForEach(line =>
                 {
                     Debug.Log($"Prefab {prefabFile.Name} contains TextMeshPro component: {line}");
-                    prefabsWithTMProComponent.Add(prefabFile);
+                    prefabsWithTMProComponentPaths.Add(prefabFile.FullName);
                 });
         }
     }
