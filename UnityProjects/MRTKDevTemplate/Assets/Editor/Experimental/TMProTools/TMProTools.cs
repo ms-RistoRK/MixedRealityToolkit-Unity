@@ -22,11 +22,11 @@ public class TMProTools
     private static HashSet<string> shadersUsedByMaterialsPaths = new();
     private static HashSet<string> errosFoundDuringProcessing = new();
 
+    private static DirectoryInfo repoRootDirectory = GetRepoRootDirectory();
+
     [MenuItem("MRTK3TMProTools/Analyze local repo")]
     private static void AnalyzeLocalRepo()
     {
-        DirectoryInfo repoRootDirectory = GetRepoRootDirectory();
-
         IEnumerable<FileInfo> processablePrefabs = GetNonPackageFilesBySearchPattern(repoRootDirectory, PREFAB_FILES_SEARCH_PATTERN);
         ProcessPrefabs(processablePrefabs);
 
@@ -51,21 +51,21 @@ public class TMProTools
         report += $"* Prefabs ({prefabsWithTMProComponentPaths.Count}) with TextMeshPro component:\n";
         foreach (string prefabPath in prefabsWithTMProComponentPaths)
         {
-            report += "\t" + prefabPath + "\n";
+            report += "\t<a href=\"" + prefabPath + $"\" line=\"2\">{prefabPath.Substring(prefabPath.IndexOf(repoRootDirectory.FullName) + repoRootDirectory.FullName.Length)}</a>\n";
         }
         report += "\n";
 
         report += $"* Assets ({assetsWithMaterialTexture2DAndGlyphsPaths.Count}) with Material, Texture2D, and GlyphTable:\n";
         foreach (string assetPath in assetsWithMaterialTexture2DAndGlyphsPaths)
         {
-            report += "\t" + assetPath + "\n";
+            report += "\t<a href=\"" + assetPath + $"\" line=\"2\">{assetPath.Substring(assetPath.IndexOf(repoRootDirectory.FullName) + repoRootDirectory.FullName.Length)}</a>\n";
         }
         report += "\n";
 
-        report += $"* Shaders ({shadersUsedByMaterialsPaths.Count}) used by materials:\n";
+        report += $"* Shaders ({shadersUsedByMaterialsPaths.Count}) used by previously listed materials:\n";
         foreach (string shaderPath in shadersUsedByMaterialsPaths)
         {
-            report += "\t" + shaderPath + "\n";
+            report += "\t<a href=\"" + shaderPath + $"\" line=\"2\">{shaderPath.Substring(shaderPath.IndexOf(repoRootDirectory.FullName) + repoRootDirectory.FullName.Length)}</a>\n";
         }
         report += "\n";
 
