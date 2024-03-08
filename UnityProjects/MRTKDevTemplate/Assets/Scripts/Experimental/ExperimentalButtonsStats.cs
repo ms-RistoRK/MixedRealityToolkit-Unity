@@ -4,16 +4,10 @@ using UnityEngine;
 using Unity.Profiling;
 using System.Text;
 
-//public class ExperimentalButtonsCustomProfiler : MonoBehaviour
 class ExperimentalButtonsStats
 {
-    //public static readonly ProfilerCategory ExperimentalButtonsProfilerCategory = ProfilerCategory.Scripts;
-    //public static readonly ProfilerCategory MyProfilerCategory = ProfilerCategory.Scripts;
     public static readonly ProfilerCategory ExperimentalButtonsStatsCategory = new ProfilerCategory("Experimental\nButtons Stats");
 
-    //public static readonly ProfilerCounter<float> Last10SecondsRenderingTimeAverage = new ProfilerCounter<float>(ExperimentalButtonsProfilerCategory,
-    //                                                                                                             "10 seconds average",
-    //                                                                                                             ProfilerMarkerDataUnit.Count);
     public static readonly ProfilerCounter<float> LastFrame =
            new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
                                       "Last frame rendering",
@@ -48,11 +42,6 @@ class ExperimentalButtonsStats
            new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,
                                       "Test metric",
                                       ProfilerMarkerDataUnit.Undefined);
-
-    //public static ProfilerCounterValue<float> Last1FrameGPUFrameTimeAverage =
-    //        new ProfilerCounterValue<float>(ExperimentalButtonsStatsCategory,
-    //                                        "Last 1 frame GPU frame time average",
-    //                                        ProfilerMarkerDataUnit.TimeNanoseconds);
 
     public static readonly ProfilerCounter<float> Last1FrameGPUFrameTimeAverage =
            new ProfilerCounter<float>(ExperimentalButtonsStatsCategory,

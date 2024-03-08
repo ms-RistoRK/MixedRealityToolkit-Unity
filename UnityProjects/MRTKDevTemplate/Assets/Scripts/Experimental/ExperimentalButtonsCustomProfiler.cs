@@ -6,11 +6,8 @@ using System.Text;
 using UnityEngine.Timeline;
 using System.Linq;
 
-//public class ExperimentalButtonsCustomProfiler : MonoBehaviour
 public class ExperimentalButtonsCustomProfiler : MonoBehaviour
 {
-    //Queue<float>
-    //ProfilerRecorder renderTimeRecoder;
     ProfilerRecorder mainThreadTimeRecorder;
     ProfilerRecorder renderThreadTimeRecorder;
     double startTime;
@@ -24,15 +21,11 @@ public class ExperimentalButtonsCustomProfiler : MonoBehaviour
 
     static double GetRecorderFrameAverageBySampleCount(ProfilerRecorder recorder, int samplesCount)
     {
-        //Debug.Log($"Frame samples: {recorder.Capacity}");
-        //var samplesCount = recorder.Capacity;
         if (samplesCount > recorder.Capacity)
         {
             Debug.LogError("Invalid sample count");
             return 0;
         }
-        //if (samplesCount == 0)
-        //    return 0;
 
         double r = 0;
         unsafe
@@ -95,7 +88,6 @@ public class ExperimentalButtonsCustomProfiler : MonoBehaviour
 
     private void OnEnable()
     {
-        //renderTimeRecoder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", 60);
         mainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", framesToTime);
         //renderTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Render", framesToTime);
         //renderTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Gfx.PresentFrame", framesToTime);
@@ -118,36 +110,15 @@ public class ExperimentalButtonsCustomProfiler : MonoBehaviour
     void Update()
     {
         ExperimentalButtonsStats.TimeSinceStart.Value = ((float)(Time.realtimeSinceStartupAsDouble - startTime)) * 1000000000.0f;
-        //ExperimentalButtonsStats.Last60FramesAverage.Sample(renderTimeRecoder.LastValue * 1000.0f);
-        //var frameTime = mainThreadTimeRecorder.LastValue; // ? Won't work until we use Unity 2022 ?
         FrameTimingManager.CaptureFrameTimings();
         var ret = FrameTimingManager.GetLatestTimings((uint)frameTimings.Length, frameTimings);
-        if (ret > 0)
-        {
-            Debug.Log("Bingo!");
-            //frameTimings[0].heightScale //ok
-            //frameTimings[0].gpuFrameTime;
-        }
-        var sb = new StringBuilder(500);
-        //float value = (float)GetRecorderFrameAverageBySampleCount(mainThreadTimeRecorder);
-        //sb.AppendLine($"Frame Time: {value * (1e-6f):F1} ms");
-        //sb.AppendLine($"Frame Time: {value}");
-        //Debug.Log($"Running? {mainThreadTimeRecorder.IsRunning} => {sb.ToString()}");
-        //var temp = (float)GetRecorderFrameAverageBySampleCount(mainThreadTimeRecorder);
-        //ExperimentalButtonsStats.LastFrame.Sample(((float)GetRecorderFrameAverageBySampleCount(mainThreadTimeRecorder, 1)));
-        //ExperimentalButtonsStats.Last5FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(mainThreadTimeRecorder, 5)));
-        //ExperimentalButtonsStats.Last10FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(mainThreadTimeRecorder, 10)));
-        //ExperimentalButtonsStats.Last30FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(mainThreadTimeRecorder, 30)));
-        //ExperimentalButtonsStats.Last60FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(mainThreadTimeRecorder, 60)));
 
-        //ExperimentalButtonsStats.LastFrame.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 1)));
-        //ExperimentalButtonsStats.Last5FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 5)));
-        //ExperimentalButtonsStats.Last10FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 10)));
-        //ExperimentalButtonsStats.Last30FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 30)));
-        //ExperimentalButtonsStats.Last60FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 60)));
-        //ExperimentalButtonsStats.TestMetric.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 60)));
-        //ExperimentalButtonsStats.Last1FrameGPUFrameTimeAverage.Sample(frameTimings[0].gpuFrameTime * 1000.0f);
-        //ExperimentalButtonsStats.Last1FrameGPUFrameTimeAverage.Sample();
+        ExperimentalButtonsStats.LastFrame.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 1)));
+        ExperimentalButtonsStats.Last5FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 5)));
+        ExperimentalButtonsStats.Last10FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 10)));
+        ExperimentalButtonsStats.Last30FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 30)));
+        ExperimentalButtonsStats.Last60FrameAverage.Sample(((float)GetRecorderFrameAverageBySampleCount(renderThreadTimeRecorder, 60)));
+
         ExperimentalButtonsStats.Last1FrameGPUFrameTimeAverage.Sample((float)GetGPUFrameTimeAverage(frameTimings, 1) * ns2ms);
         ExperimentalButtonsStats.Last5FrameGPUFrameTimeAverage.Sample((float)GetGPUFrameTimeAverage(frameTimings, 5) * ns2ms);
         ExperimentalButtonsStats.Last10FrameGPUFrameTimeAverage.Sample((float)GetGPUFrameTimeAverage(frameTimings, 10) * ns2ms);
@@ -156,21 +127,5 @@ public class ExperimentalButtonsCustomProfiler : MonoBehaviour
         ExperimentalButtonsStats.GPUFrameTimeAverageSinceStart.Sample((float)GetUpdatedGPUFrameTimeAverageSinceStart(frameTimings) * ns2ms);
         ExperimentalButtonsStats.RenderThreadTimeAverageSinceStart.Sample((float)GetUpdateRenderThreadTimeAverageSinceStart(renderThreadTimeRecorder) * ns2ms);
 
-        //Debug.Log($"Frame time: {(float)GetRecorderFrameAverageBySampleCount(mainThreadTimeRecorder, 1) * (1e-6f)} ms");
-        if (Time.realtimeSinceStartup - startTime > 10.0d)
-        {
-            //ExperimentalButtonsStats.OneSecondRenderingAverage.Sample(909);
-            //ExperimentalButtonsStats.SecondMeasure.Value = 313;
-        }
-        else
-        {
-            //ExperimentalButtonsStats.OneSecondRenderingAverage.Sample(500);
-            //ExperimentalButtonsStats.SecondMeasure.Value = 600;
-        }
-    }
-
-    private void OnGUI()
-    {
-        //GUI.TextArea(new Rect(10, 30, 250, 50), statsText);
     }
 }
