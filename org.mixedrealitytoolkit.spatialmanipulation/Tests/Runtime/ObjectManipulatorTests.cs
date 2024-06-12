@@ -983,7 +983,7 @@ namespace MixedReality.Toolkit.SpatialManipulation.Runtime.Tests
             yield return hand.Move(Vector3.forward * 3f);
             yield return RuntimeTestUtilities.WaitForFixedUpdates();
 
-            Assert.AreNotEqual(Vector3.zero, backgroundRigidbody.velocity);
+            Assert.AreNotEqual(Vector3.zero, backgroundRigidbody.linearVelocity);
             Assert.AreEqual(1, collisionListener.CollisionCount);
         }
 
