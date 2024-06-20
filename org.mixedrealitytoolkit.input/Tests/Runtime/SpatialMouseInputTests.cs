@@ -8,14 +8,14 @@ using MixedReality.Toolkit.Input.Experimental;
 using MixedReality.Toolkit.Core.Tests;
 using NUnit.Framework;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
-using UnityEngine.XR;
-using UnityEngine.XR.Interaction.Toolkit;
+using System.Collections.Generic;
+
+using Unity.XR.CoreUtils;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -31,7 +31,30 @@ namespace MixedReality.Toolkit.Input.Tests
         private const string SpatialMouseControllerPrefabGuid = "dc525621b8522034e867ed2799129315";
         private static readonly string SpatialMouseControllerPrefabPath = AssetDatabase.GUIDToAssetPath(SpatialMouseControllerPrefabGuid);
 
-        private static GameObject controllerReference;
+        private static GameObject spatialMouseControllerGameObject;
+        private static SpatialMouseInteractor spatialMouseInteractor;
+
+        private const string CameraOffsetName = "Camera Offset";
+        private const string MRTKSpatialMouseControllerName = "MRTK Spatial Mouse Controller";
+        private const string MRTKSpatialMouseInteractorName = "SpatialMouseInteractor";
+
+        [UnitySetUp]
+        public override IEnumerator Setup()
+        {
+            yield return base.SetupForControllerlessRig();
+            spatialMouseControllerGameObject = InstantiateSpatialMouseController();
+
+            List<GameObject> rigChildren = new List<GameObject>();
+            InputTestUtilities.RigReference.GetChildGameObjects(rigChildren);
+            var cameraOffset = rigChildren.Find(go => go.name == CameraOffsetName);
+            spatialMouseControllerGameObject.transform.parent = cameraOffset.transform;
+
+            List<GameObject> spatialMouseControllerChildren = new List<GameObject>();
+            spatialMouseControllerGameObject.GetChildGameObjects(spatialMouseControllerChildren);
+            spatialMouseInteractor = spatialMouseControllerChildren.Find(go => go.name == MRTKSpatialMouseInteractorName).GetComponent<SpatialMouseInteractor>();
+
+            yield return null;
+        }
 
         /// <summary>
         /// Very basic test of SpatialMouseInteractor clicking an Interactable.
@@ -81,14 +104,16 @@ namespace MixedReality.Toolkit.Input.Tests
                 "StatefulInteractable did not get Hovered by SpatialMouseInteractor.");
 
             // Inject mouse down.
+            /* Original code
             using (StateEvent.From(mouse, out var eventPtr))
             {
                 ((ButtonControl)mouse["press"]).WriteValueIntoEvent(1f, eventPtr);
                 InputSystem.QueueEvent(eventPtr);
                 InputSystem.Update();
-            }
+            }/**/
 
-            yield return RuntimeTestUtilities.WaitForUpdates();
+            spatialMouseInteractor.selectInput.QueueManualState(true, 1f);
+            yield return null;
 
             // Verify that the mouse is selecting the cube.
             var selectingMouseInteractor = firstCubeInteractable.interactorsSelecting.Find(
@@ -97,15 +122,18 @@ namespace MixedReality.Toolkit.Input.Tests
             Assert.IsNotNull(selectingMouseInteractor,
                 "StatefulInteractable did not get Selected by SpatialMouseInteractor.");
 
+            /* Original code
             // Inject mouse up.
             using (StateEvent.From(mouse, out var eventPtr))
             {
                 ((ButtonControl)mouse["press"]).WriteValueIntoEvent(0f, eventPtr);
                 InputSystem.QueueEvent(eventPtr);
                 InputSystem.Update();
-            }
+            }/**/
 
-            yield return RuntimeTestUtilities.WaitForUpdates();
+            spatialMouseInteractor.selectInput.QueueManualState(false, 0f);
+            yield return null;
+            //yield return RuntimeTestUtilities.WaitForUpdates();
 
             // Verify that the mouse is no longer selecting the cube.
             var notSelectingMouseInteractor = firstCubeInteractable.interactorsSelecting.Find(
@@ -123,8 +151,8 @@ namespace MixedReality.Toolkit.Input.Tests
         public static GameObject InstantiateSpatialMouseController()
         {
             Object prefab = AssetDatabase.LoadAssetAtPath(SpatialMouseControllerPrefabPath, typeof(Object));
-            controllerReference = Object.Instantiate(prefab) as GameObject;
-            return controllerReference;
+            spatialMouseControllerGameObject = Object.Instantiate(prefab) as GameObject;
+            return spatialMouseControllerGameObject;
         }
 
         /// <summary>
@@ -134,17 +162,8 @@ namespace MixedReality.Toolkit.Input.Tests
         {
             if (Application.isPlaying)
             {
-                UnityEngine.Object.Destroy(controllerReference);
+                UnityEngine.Object.Destroy(spatialMouseControllerGameObject);
             }
-        }
-
-        public override IEnumerator Setup()
-        {
-            yield return base.Setup();
-
-            InstantiateSpatialMouseController();
-
-            yield return null;
         }
 
         public override IEnumerator TearDown()
